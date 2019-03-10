@@ -156,6 +156,9 @@ orxSTATUS orxFASTCALL orxImGui_Init()
   orxDisplay_SetBitmapData(pstBitmap, pcPixels, iWidth * iHeight * 4);
   io.Fonts->TexID = (void *)pstBitmap;
 
+  io.MouseDrawCursor = true;
+  orxMouse_ShowCursor(orxFALSE);
+
   ImGui::StyleColorsDark();
 
   orxEvent_AddHandler(orxEVENT_TYPE_RENDER, &orxImGui_NewFrame);
