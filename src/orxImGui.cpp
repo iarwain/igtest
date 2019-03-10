@@ -172,8 +172,6 @@ orxSTATUS orxFASTCALL orxImGui_Init()
   io.GetClipboardTextFn = &orxImGui_GetClipboard;
   io.SetClipboardTextFn = &orxImGui_SetClipboard;
 
-  ImGui::StyleColorsDark();
-
   orxEvent_AddHandler(orxEVENT_TYPE_RENDER, &orxImGui_NewFrame);
   orxEvent_SetHandlerIDFlags(&orxImGui_NewFrame, orxEVENT_TYPE_RENDER, orxNULL, orxEVENT_GET_FLAG(orxRENDER_EVENT_STOP), orxEVENT_KU32_MASK_ID_ALL);
 
