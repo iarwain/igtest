@@ -11,6 +11,16 @@ static void orxImGui_Free(void *_pData, void *)
   orxMemory_Free(_pData);
 }
 
+static const char *orxImGui_GetClipboard(void *)
+{
+  return orxSystem_GetClipboard();
+}
+
+static void orxImGui_SetClipboard(void *, const char *_acText)
+{
+  orxSystem_SetClipboard(_acText);
+}
+
 static void orxImGui_BeginFrame()
 {
   ImGuiIO &io = ImGui::GetIO();
@@ -158,6 +168,9 @@ orxSTATUS orxFASTCALL orxImGui_Init()
 
   io.MouseDrawCursor = true;
   orxMouse_ShowCursor(orxFALSE);
+
+  io.GetClipboardTextFn = &orxImGui_GetClipboard;
+  io.SetClipboardTextFn = &orxImGui_SetClipboard;
 
   ImGui::StyleColorsDark();
 
