@@ -40,6 +40,7 @@
  */
 
 orxSTATUS orxFASTCALL orxImGui_Init();
+void orxFASTCALL orxImGui_Exit();
 
 /** Initializes your game
  */
@@ -87,6 +88,7 @@ orxSTATUS orxFASTCALL Run()
 void orxFASTCALL Exit()
 {
     /* Lets Orx clean all our mess automatically. :) */
+    orxImGui_Exit();
 }
 
 /** Bootstrap function
