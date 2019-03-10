@@ -81,7 +81,22 @@ static void orxImGui_BeginFrame()
     orxMouse_SetPosition(&vMousePos);
   }
 
-  //! TODO : Handle capture outputs
+  if(io.WantCaptureMouse)
+  {
+    orxInput_SetTypeFlags(orxINPUT_KU32_FLAG_TYPE_NONE, orxINPUT_GET_FLAG(orxINPUT_TYPE_MOUSE_BUTTON) | orxINPUT_GET_FLAG(orxINPUT_TYPE_MOUSE_AXIS));
+  }
+  else
+  {
+    orxInput_SetTypeFlags(orxINPUT_GET_FLAG(orxINPUT_TYPE_MOUSE_BUTTON) | orxINPUT_GET_FLAG(orxINPUT_TYPE_MOUSE_AXIS), orxINPUT_KU32_FLAG_TYPE_NONE);
+  }
+  if(io.WantCaptureKeyboard)
+  {
+    orxInput_SetTypeFlags(orxINPUT_KU32_FLAG_TYPE_NONE, orxINPUT_GET_FLAG(orxINPUT_TYPE_KEYBOARD_KEY));
+  }
+  else
+  {
+    orxInput_SetTypeFlags(orxINPUT_GET_FLAG(orxINPUT_TYPE_KEYBOARD_KEY), orxINPUT_KU32_FLAG_TYPE_NONE);
+  }
 }
 
 static void orxImGui_EndFrame()
@@ -136,7 +151,7 @@ orxSTATUS orxFASTCALL orxImGui_Init()
   ImGui::CreateContext();
   ImGuiIO& io                     = ImGui::GetIO();
   io.BackendFlags                 = ImGuiBackendFlags_HasMouseCursors | ImGuiBackendFlags_HasSetMousePos | ImGuiBackendFlags_HasGamepad;
-  io.ConfigFlags                  = ImGuiConfigFlags_None;
+  io.ConfigFlags                  = ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad | ImGuiConfigFlags_NavEnableSetMousePos;
   io.KeyMap[ImGuiKey_Tab]         = orxKEYBOARD_KEY_TAB;
   io.KeyMap[ImGuiKey_LeftArrow]   = orxKEYBOARD_KEY_LEFT;
   io.KeyMap[ImGuiKey_RightArrow]  = orxKEYBOARD_KEY_RIGHT;
