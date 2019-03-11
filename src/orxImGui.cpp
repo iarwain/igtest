@@ -75,20 +75,18 @@ static orxSTATUS orxFASTCALL orxImGui_BeginFrame(const orxEVENT *_pstEvent)
 
   if(rstIO.WantTextInput)
   {
-    rstIO.AddInputCharactersUTF8(orxKeyboard_ReadString());
     orxKeyboard_Show(orxTRUE);
+    rstIO.AddInputCharactersUTF8(orxKeyboard_ReadString());
   }
   else
   {
     orxKeyboard_Show(orxFALSE);
   }
-
   if(rstIO.WantSetMousePos)
   {
     orxVECTOR vMousePos = {rstIO.MousePos.x, rstIO.MousePos.y};
     orxMouse_SetPosition(&vMousePos);
   }
-
   if(rstIO.WantCaptureMouse)
   {
     orxInput_SetTypeFlags(orxINPUT_KU32_FLAG_TYPE_NONE, orxINPUT_GET_FLAG(orxINPUT_TYPE_MOUSE_BUTTON) | orxINPUT_GET_FLAG(orxINPUT_TYPE_MOUSE_AXIS));
@@ -115,7 +113,7 @@ static orxSTATUS orxFASTCALL orxImGui_EndFrame(const orxEVENT *_pstEvent)
   ImGui::Render();
   ImDrawData *pstDrawData = ImGui::GetDrawData();
 
-  orxBITMAP * pstScreen = orxDisplay_GetScreenBitmap();
+  orxBITMAP *pstScreen = orxDisplay_GetScreenBitmap();
   orxDisplay_SetDestinationBitmaps(&pstScreen, 1);
 
   orxDISPLAY_MESH stMesh = {};
@@ -140,7 +138,7 @@ static orxSTATUS orxFASTCALL orxImGui_EndFrame(const orxEVENT *_pstEvent)
       else
       {
         stMesh.u32IndexNumber = rstCommand.ElemCount;
-        orxDisplay_SetBitmapClipping(orxNULL, orxF2U(rstCommand.ClipRect.x), orxF2U(rstCommand.ClipRect.y), orxF2U(rstCommand.ClipRect.z), orxF2U(rstCommand.ClipRect.w));
+        orxDisplay_SetBitmapClipping(orxNULL, orxF2U(rstCommand.ClipRect.x - pstDrawData->DisplayPos.x), orxF2U(rstCommand.ClipRect.y - pstDrawData->DisplayPos.y), orxF2U(rstCommand.ClipRect.z - pstDrawData->DisplayPos.x), orxF2U(rstCommand.ClipRect.w - pstDrawData->DisplayPos.y));
         orxDisplay_DrawMesh(&stMesh, (orxBITMAP *)rstCommand.TextureId, orxDISPLAY_SMOOTHING_ON, orxDISPLAY_BLEND_MODE_ALPHA);
       }
       stMesh.au16IndexList += rstCommand.ElemCount;
