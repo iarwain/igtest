@@ -21,7 +21,7 @@ static void orxImGui_SetClipboard(void *, const char *_acText)
   orxSystem_SetClipboard(_acText);
 }
 
-static void orxImGui_BeginFrame()
+static orxSTATUS orxFASTCALL orxImGui_BeginFrame(const orxEVENT *_pstEvent)
 {
   ImGuiIO &rstIO = ImGui::GetIO();
 
@@ -53,7 +53,6 @@ static void orxImGui_BeginFrame()
   rstIO.KeyShift  = (orxKeyboard_IsKeyPressed(orxKEYBOARD_KEY_LSHIFT) || orxKeyboard_IsKeyPressed(orxKEYBOARD_KEY_RSHIFT)) ? true : false;
   rstIO.KeyAlt    = (orxKeyboard_IsKeyPressed(orxKEYBOARD_KEY_LALT) || orxKeyboard_IsKeyPressed(orxKEYBOARD_KEY_RALT)) ? true : false;
   rstIO.KeySuper  = (orxKeyboard_IsKeyPressed(orxKEYBOARD_KEY_LSYSTEM) || orxKeyboard_IsKeyPressed(orxKEYBOARD_KEY_RSYSTEM)) ? true : false;
-  rstIO.AddInputCharactersUTF8(orxKeyboard_ReadString());
 
   rstIO.NavInputs[ImGuiNavInput_Activate]     = orxJoystick_IsButtonPressed(orxJOYSTICK_BUTTON_A_1) ? 1.0f : 0.0f;
   rstIO.NavInputs[ImGuiNavInput_Cancel]       = orxJoystick_IsButtonPressed(orxJOYSTICK_BUTTON_B_1) ? 1.0f : 0.0f;
@@ -74,7 +73,16 @@ static void orxImGui_BeginFrame()
 
   ImGui::NewFrame();
 
-  orxKeyboard_Show(rstIO.WantTextInput);
+  if(rstIO.WantTextInput)
+  {
+    rstIO.AddInputCharactersUTF8(orxKeyboard_ReadString());
+    orxKeyboard_Show(orxTRUE);
+  }
+  else
+  {
+    orxKeyboard_Show(orxFALSE);
+  }
+
   if(rstIO.WantSetMousePos)
   {
     orxVECTOR vMousePos = {rstIO.MousePos.x, rstIO.MousePos.y};
@@ -97,9 +105,11 @@ static void orxImGui_BeginFrame()
   {
     orxInput_SetTypeFlags(orxINPUT_GET_FLAG(orxINPUT_TYPE_KEYBOARD_KEY), orxINPUT_KU32_FLAG_TYPE_NONE);
   }
+
+  return orxSTATUS_SUCCESS;
 }
 
-static void orxImGui_EndFrame()
+static orxSTATUS orxFASTCALL orxImGui_EndFrame(const orxEVENT *_pstEvent)
 {
   ImGui::EndFrame();
   ImGui::Render();
@@ -136,12 +146,6 @@ static void orxImGui_EndFrame()
       stMesh.au16IndexList += rstCommand.ElemCount;
     }
   }
-}
-
-static orxSTATUS orxFASTCALL orxImGui_NewFrame(const orxEVENT *_pstEvent)
-{
-  orxImGui_EndFrame();
-  orxImGui_BeginFrame();
 
   return orxSTATUS_SUCCESS;
 }
@@ -188,10 +192,12 @@ orxSTATUS orxFASTCALL orxImGui_Init()
   rstIO.GetClipboardTextFn = &orxImGui_GetClipboard;
   rstIO.SetClipboardTextFn = &orxImGui_SetClipboard;
 
-  orxEvent_AddHandler(orxEVENT_TYPE_RENDER, &orxImGui_NewFrame);
-  orxEvent_SetHandlerIDFlags(&orxImGui_NewFrame, orxEVENT_TYPE_RENDER, orxNULL, orxEVENT_GET_FLAG(orxRENDER_EVENT_STOP), orxEVENT_KU32_MASK_ID_ALL);
+  orxEvent_AddHandler(orxEVENT_TYPE_RENDER, &orxImGui_BeginFrame);
+  orxEvent_SetHandlerIDFlags(&orxImGui_BeginFrame, orxEVENT_TYPE_RENDER, orxNULL, orxEVENT_GET_FLAG(orxRENDER_EVENT_STOP), orxEVENT_KU32_MASK_ID_ALL);
+  orxEvent_AddHandler(orxEVENT_TYPE_RENDER, &orxImGui_EndFrame);
+  orxEvent_SetHandlerIDFlags(&orxImGui_EndFrame, orxEVENT_TYPE_RENDER, orxNULL, orxEVENT_GET_FLAG(orxRENDER_EVENT_PROFILER_START), orxEVENT_KU32_MASK_ID_ALL);
 
-  orxImGui_BeginFrame();
+  orxImGui_BeginFrame(orxNULL);
 
   return orxSTATUS_SUCCESS;
 }
