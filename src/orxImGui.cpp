@@ -3,7 +3,7 @@
 
 static void *orxImGui_Allocate(size_t _sSize, void *)
 {
-  return orxMemory_Allocate(_sSize, orxMEMORY_TYPE_TEMP);
+  return orxMemory_Allocate((orxU32)_sSize, orxMEMORY_TYPE_TEMP);
 }
 
 static void orxImGui_Free(void *_pData, void *)
